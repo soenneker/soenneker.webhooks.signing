@@ -17,6 +17,15 @@ public interface IWebhooksSigningUtil
     string GenerateSecret(int length = WebhooksSigningConstants.DefaultSecretLength);
 
     /// <summary>
+    /// Determines whether a value is a canonical Standard Webhooks symmetric signing secret.
+    /// </summary>
+    /// <param name="secret">
+    /// The value to validate. A valid value uses the <c>whsec_&lt;base64&gt;</c> format and decodes to between 24 and 64 bytes.
+    /// </param>
+    [Pure]
+    bool IsValidSecret(string? secret);
+
+    /// <summary>
     /// Creates an HMAC-SHA256 <c>v1</c> signature for a UTF-8 payload.
     /// </summary>
     /// <param name="webhookId">The stable, producer-controlled webhook message identifier.</param>

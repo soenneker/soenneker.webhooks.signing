@@ -33,6 +33,29 @@ public sealed class WebhooksSigningUtil : IWebhooksSigningUtil
         }
     }
 
+    public bool IsValidSecret(string? secret)
+    {
+        if (secret is null || !secret.StartsWith(WebhooksSigningConstants.SecretPrefix, StringComparison.Ordinal))
+            return false;
+
+        byte[]? key = null;
+
+        try
+        {
+            key = Convert.FromBase64String(secret[WebhooksSigningConstants.SecretPrefix.Length..]);
+            return key.Length is >= WebhooksSigningConstants.MinimumSecretLength and <= WebhooksSigningConstants.MaximumSecretLength;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+        finally
+        {
+            if (key is not null)
+                CryptographicOperations.ZeroMemory(key);
+        }
+    }
+
     public string Sign(string webhookId, DateTimeOffset timestamp, string payload, string secret)
     {
         return Sign(webhookId, timestamp.ToUnixTimeSeconds(), payload, secret);

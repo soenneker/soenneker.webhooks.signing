@@ -83,6 +83,19 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
+    public async Task IsValidSecret_should_validate_canonical_standard_secrets()
+    {
+        await Assert.That(_util.IsValidSecret(_util.GenerateSecret(WebhooksSigningConstants.MinimumSecretLength))).IsTrue();
+        await Assert.That(_util.IsValidSecret(_util.GenerateSecret(WebhooksSigningConstants.MaximumSecretLength))).IsTrue();
+        await Assert.That(_util.IsValidSecret(null)).IsFalse();
+        await Assert.That(_util.IsValidSecret("")).IsFalse();
+        await Assert.That(_util.IsValidSecret("not-base64")).IsFalse();
+        await Assert.That(_util.IsValidSecret("whsec_not-base64")).IsFalse();
+        await Assert.That(_util.IsValidSecret("whsec_" + Convert.ToBase64String(new byte[WebhooksSigningConstants.MinimumSecretLength - 1]))).IsFalse();
+        await Assert.That(_util.IsValidSecret("whsec_" + Convert.ToBase64String(new byte[WebhooksSigningConstants.MaximumSecretLength + 1]))).IsFalse();
+    }
+
+    [Test]
     public async Task Create_should_serialize_once_and_sign_the_returned_payload()
     {
         const string id = "msg_object";
