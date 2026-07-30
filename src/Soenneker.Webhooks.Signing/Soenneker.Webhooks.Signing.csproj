@@ -43,9 +43,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
-        <PackageReference Include="Soenneker.Extensions.Arrays.Bytes" Version="4.0.61" />
-        <PackageReference Include="Soenneker.Extensions.String" Version="4.0.707" />
         <PackageReference Include="Soenneker.Utils.Json" Version="4.0.2601" />
     </ItemGroup>
 </Project>
