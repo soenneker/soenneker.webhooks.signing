@@ -33,6 +33,7 @@ public sealed record WebhookSigningHeaders
     /// <summary>
     /// Returns the headers using their specification-defined names and invariant values.
     /// </summary>
+    /// <returns>The requested read Only Dictionary.</returns>
     public IReadOnlyDictionary<string, string> ToDictionary()
     {
         return new Dictionary<string, string>(3, System.StringComparer.OrdinalIgnoreCase)
