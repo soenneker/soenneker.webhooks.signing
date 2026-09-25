@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -120,10 +121,10 @@ public interface IWebhooksSigningUtil
     /// <param name="timestamp">The delivery-attempt timestamp.</param>
     /// <param name="payload">Payload processed by the operation.</param>
     /// <param name="secret">A base64-encoded secret, optionally prefixed with <c>whsec_</c>.</param>
-    /// <param name="optionType">The optional <see cref="JsonOptionType"/> used by JsonUtil. Web options are used by default.</param>
     /// <returns>The resulting signed Webhook.</returns>
+    /// <param name="typeInfo">Source-generated JSON metadata and serialization options for the value.</param>
     [Pure]
-    SignedWebhook Create(string webhookId, DateTimeOffset timestamp, object payload, string secret, JsonOptionType? optionType = null);
+    SignedWebhook Create<T>(string webhookId, DateTimeOffset timestamp, T payload, string secret, JsonTypeInfo<T> typeInfo);
 
     /// <summary>
     /// Serializes an object once and returns both the exact JSON payload and its Standard Webhooks headers,
@@ -133,9 +134,9 @@ public interface IWebhooksSigningUtil
     /// <param name="timestamp">The delivery-attempt timestamp.</param>
     /// <param name="payload">Payload processed by the operation.</param>
     /// <param name="secrets">One or more active signing secrets.</param>
-    /// <param name="optionType">The optional <see cref="JsonOptionType"/> used by JsonUtil. Web options are used by default.</param>
     /// <returns>The resulting signed Webhook.</returns>
+    /// <param name="typeInfo">Source-generated JSON metadata and serialization options for the value.</param>
     [Pure]
-    SignedWebhook Create(string webhookId, DateTimeOffset timestamp, object payload, IEnumerable<string> secrets,
-        JsonOptionType? optionType = null);
+    SignedWebhook Create<T>(string webhookId, DateTimeOffset timestamp, T payload, IEnumerable<string> secrets,
+        JsonTypeInfo<T> typeInfo);
 }

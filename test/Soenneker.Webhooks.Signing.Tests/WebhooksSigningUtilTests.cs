@@ -101,21 +101,33 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
         const string id = "msg_object";
         const string secret = "whsec_MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
         var timestamp = DateTimeOffset.FromUnixTimeSeconds(1740000000);
-        var payload = new
+        var payload = new WebhookPayload
         {
             EventType = "contact.created",
-            Data = new
+            Data = new ContactPayload
             {
                 Id = 42,
                 DisplayName = "Jane Doe"
             }
         };
 
-        SignedWebhook signedWebhook = _util.Create(id, timestamp, payload, secret);
+        SignedWebhook signedWebhook = _util.Create(id, timestamp, payload, secret, TestJsonContext.Get<WebhookPayload>());
         string expectedSignature = _util.Sign(id, timestamp, signedWebhook.Payload, secret);
 
         await Assert.That(signedWebhook.Payload.ToStr()).IsEqualTo(
             "{\"eventType\":\"contact.created\",\"data\":{\"id\":42,\"displayName\":\"Jane Doe\"}}");
         await Assert.That(signedWebhook.Headers.Signature).IsEqualTo(expectedSignature);
     }
+}
+
+public sealed class WebhookPayload
+{
+    public string EventType { get; set; } = "";
+    public ContactPayload Data { get; set; } = new();
+}
+
+public sealed class ContactPayload
+{
+    public int Id { get; set; }
+    public string DisplayName { get; set; } = "";
 }

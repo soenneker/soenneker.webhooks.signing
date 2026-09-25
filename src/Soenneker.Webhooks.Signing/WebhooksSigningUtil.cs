@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization.Metadata;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
@@ -133,11 +134,11 @@ public sealed class WebhooksSigningUtil : IWebhooksSigningUtil
         return new WebhookSigningHeaders(webhookId, unixTimestamp, signature);
     }
 
-    public SignedWebhook Create(string webhookId, DateTimeOffset timestamp, object payload, string secret, JsonOptionType? optionType = null)
+    public SignedWebhook Create<T>(string webhookId, DateTimeOffset timestamp, T payload, string secret, JsonTypeInfo<T> typeInfo)
     {
         ArgumentNullException.ThrowIfNull(payload);
 
-        byte[] serializedPayload = JsonUtil.SerializeToUtf8Bytes(payload, optionType);
+        byte[] serializedPayload = JsonUtil.SerializeToUtf8Bytes(payload, typeInfo);
         long unixTimestamp = timestamp.ToUnixTimeSeconds();
         string signature = SignCore(webhookId, unixTimestamp, serializedPayload, secret);
         var headers = new WebhookSigningHeaders(webhookId, unixTimestamp, signature);
@@ -145,12 +146,12 @@ public sealed class WebhooksSigningUtil : IWebhooksSigningUtil
         return new SignedWebhook(serializedPayload, headers);
     }
 
-    public SignedWebhook Create(string webhookId, DateTimeOffset timestamp, object payload, IEnumerable<string> secrets,
-        JsonOptionType? optionType = null)
+    public SignedWebhook Create<T>(string webhookId, DateTimeOffset timestamp, T payload, IEnumerable<string> secrets,
+        JsonTypeInfo<T> typeInfo)
     {
         ArgumentNullException.ThrowIfNull(payload);
 
-        byte[] serializedPayload = JsonUtil.SerializeToUtf8Bytes(payload, optionType);
+        byte[] serializedPayload = JsonUtil.SerializeToUtf8Bytes(payload, typeInfo);
         WebhookSigningHeaders headers = CreateHeaders(webhookId, timestamp, serializedPayload, secrets);
 
         return new SignedWebhook(serializedPayload, headers);
