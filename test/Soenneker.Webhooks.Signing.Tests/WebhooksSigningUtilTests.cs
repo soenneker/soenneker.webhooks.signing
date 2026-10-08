@@ -5,6 +5,7 @@ using Soenneker.Extensions.Arrays.Bytes;
 using Soenneker.Extensions.String;
 using Soenneker.Tests.HostedUnit;
 using Soenneker.Webhooks.Signing.Abstract;
+using System.Threading;
 
 namespace Soenneker.Webhooks.Signing.Tests;
 
@@ -19,13 +20,13 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask Default()
+    public async ValueTask Default(CancellationToken cancellationToken)
     {
         await Assert.That(_util).IsNotNull();
     }
 
     [Test]
-    public async ValueTask Sign_should_match_cross_platform_hmac_vector()
+    public async ValueTask Sign_should_match_cross_platform_hmac_vector(CancellationToken cancellationToken)
     {
         const string id = "msg_2KWPBgLlAfxdpx2AI54pPJ85f4W";
         const long timestamp = 1674087231;
@@ -38,7 +39,7 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask Sign_should_treat_string_as_exact_utf8_bytes()
+    public async ValueTask Sign_should_treat_string_as_exact_utf8_bytes(CancellationToken cancellationToken)
     {
         const string id = "msg_unicode";
         const long timestamp = 1720000000;
@@ -52,7 +53,7 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask Sign_should_support_rotation_and_create_complete_headers()
+    public async ValueTask Sign_should_support_rotation_and_create_complete_headers(CancellationToken cancellationToken)
     {
         const string id = "msg_rotation";
         var timestamp = DateTimeOffset.FromUnixTimeSeconds(1730000000);
@@ -73,7 +74,7 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask GenerateSecret_should_return_a_32_byte_standard_secret()
+    public async ValueTask GenerateSecret_should_return_a_32_byte_standard_secret(CancellationToken cancellationToken)
     {
         string secret = _util.GenerateSecret();
         byte[] bytes = secret[WebhooksSigningConstants.SecretPrefix.Length..].ToBytesFromBase64();
@@ -83,7 +84,7 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask IsValidSecret_should_validate_canonical_standard_secrets()
+    public async ValueTask IsValidSecret_should_validate_canonical_standard_secrets(CancellationToken cancellationToken)
     {
         await Assert.That(_util.IsValidSecret(_util.GenerateSecret(WebhooksSigningConstants.MinimumSecretLength))).IsTrue();
         await Assert.That(_util.IsValidSecret(_util.GenerateSecret(WebhooksSigningConstants.MaximumSecretLength))).IsTrue();
@@ -96,7 +97,7 @@ public sealed class WebhooksSigningUtilTests : HostedUnitTest
     }
 
     [Test]
-    public async ValueTask Create_should_serialize_once_and_sign_the_returned_payload()
+    public async ValueTask Create_should_serialize_once_and_sign_the_returned_payload(CancellationToken cancellationToken)
     {
         const string id = "msg_object";
         const string secret = "whsec_MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
